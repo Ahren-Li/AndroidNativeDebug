@@ -15,6 +15,7 @@
 
 package org.ahren.android.run.configuration.lldb;
 
+import com.android.ddmlib.IShellOutputReceiver;
 import com.android.sdklib.SdkVersionInfo;
 import com.android.sdklib.devices.Abi;
 import com.intellij.execution.Executor;
@@ -36,6 +37,7 @@ import org.ahren.android.ui.dialog.AndroidDeviceDialog;
 import org.ahren.android.ui.dialog.AndroidProcessDialog;
 import org.ahren.android.ui.editor.LLDBEditor;
 import org.ahren.android.ui.editor.SymbolEditor;
+import org.ahren.android.ui.model.AndroidListModel;
 import org.ahren.android.utils.Android;
 import org.ahren.android.utils.Configuration;
 import org.ahren.android.utils.Log;
@@ -43,7 +45,9 @@ import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +110,21 @@ public class LLDBRunConfiguration extends BaseRunConfiguration
                 }else{
                     canRun = false;
                 }
+            } else {
+                try {
+                    GetPidProcessListener l = new GetPidProcessListener();
+                    device.getDevice().executeShellCommand("pidof " + processName , l);
+                    l.flush();
+                    int pid = l.getPid();
+                    if (pid > 0) {
+                        parameters.setProcessPid(pid);
+                    } else {
+                        canRun = false;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    canRun = false;
+                }
             }
         }
 
@@ -114,6 +133,41 @@ public class LLDBRunConfiguration extends BaseRunConfiguration
             return new AndroidDebugState(new AndroidLLDBLauncher(getProject(), parameters), executionEnvironment);
         }
         return null;
+    }
+
+    static class GetPidProcessListener implements IShellOutputReceiver {
+
+        StringBuffer buffer = new StringBuffer();
+        int pid = 0;
+
+        public int getPid() {
+            return pid;
+        }
+
+        @Override
+        public void addOutput(byte[] bytes, int i, int i1) {
+            buffer.append(new String(bytes, i, i1));
+        }
+
+        @Override
+        public void flush() {
+            try {
+                StringReader reader = new StringReader(buffer.toString());
+                BufferedReader buffer = new BufferedReader(reader);
+                String line = buffer.readLine(); // read one line
+                if (line.contains(" ")) { // If multi process with same name, then choose first one
+                    line = line.split(" ")[0];
+                }
+                pid = Integer.parseInt(line);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
     }
 
     @Override
