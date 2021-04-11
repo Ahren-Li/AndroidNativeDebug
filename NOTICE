@@ -1,0 +1,8 @@
+Thanks to:
+----------
+    o The CLion developer team. Most of the core functions of gdb and lldb come from CLion.
+    o The Google android plugin. It doesn't care me about adb-related features.
+
+External code (based on other plugins' code, also noted in the class javadoc):
+   o org.ahren.android.adb.AdbService
+   o org.ahren.android.ui.ChooseSymbolDirectoryPanel
