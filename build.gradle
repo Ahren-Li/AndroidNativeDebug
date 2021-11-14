@@ -1,76 +1,31 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven {
-            url 'https://dl.bintray.com/jetbrains/intellij-plugin-service'
-        }
-        maven {
-            url "https://cache-redirector.jetbrains.com/jetbrains.bintray.com/intellij-third-party-dependencies"
-        }
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.jetbrains.intellij.plugins:gradle-intellij-plugin:FAKE_VERSION"
-        classpath "gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:0.8.15"
-    }
-}
-
 plugins {
-    id "org.jetbrains.intellij" version "0.7.2"
-    id "org.jetbrains.kotlin.jvm" version '1.3.70'
-    id "com.google.protobuf" version "0.8.15"
+    id 'java'
+    id 'org.jetbrains.intellij' version '1.2.1'
+    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
 }
 
-subprojects {
+group 'org.ahren.android'
+version '1.211.1'
 
-    repositories {
-        mavenCentral()
-    }
-
-    if ("plugin" != project.name){
-        return
-    }
-
-    apply plugin: 'java'
-    apply plugin: 'org.jetbrains.intellij'
-
-    intellij {
-        version 'CL-2020.1.3'
-    }
-
-    patchPluginXml {
-        changeNotes getChangeNote(projectDir)
-    }
-
-    publishPlugin {
-        channels plugin_channels
-        token ""
-    }
+repositories {
+    mavenCentral()
 }
 
-wrapper {
-    gradleVersion = '6.7.1'
-    distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 
-static def getChangeNote(File projectDir){
-    def change = ""
-    def change_file = new File(projectDir, "CHANGE")
-    def input = change_file.newReader()
-    BufferedReader br = new BufferedReader(input)
-    try {
-        while(true) {
-            String line = br.readLine();
-            if (line == null || "----" == line) break
-            change += line + "<br>"
-        }
-    } finally {
-        br.close()
-    }
-    return change
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version '2021.1'
+}
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}
+test {
+    useJUnitPlatform()
 }

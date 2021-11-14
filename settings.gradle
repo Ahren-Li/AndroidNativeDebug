@@ -1,19 +1,2 @@
-pluginManagement {
-    repositories {
-        maven {
-            url 'https://cache-redirector.jetbrains.com/plugins.gradle.org'
-        }
-    }
-}
+rootProject.name = 'AndroidNativeDebug'
 
-include 'plugin'
-/*
-include 'tools-base-common', 'tools-base-sdklib', 'tools-base-ddmlib',
-        'tools-base-annotations', 'tools-base-repository'
-
-project(':tools-base-common').projectDir = file('tools/base/common')
-project(':tools-base-sdklib').projectDir = file('tools/base/sdklib')
-project(':tools-base-ddmlib').projectDir = file('tools/base/ddmlib')
-project(':tools-base-annotations').projectDir = file('tools/base/annotations')
-project(':tools-base-repository').projectDir = file('tools/base/repository')
-*/
