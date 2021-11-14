@@ -156,7 +156,7 @@ public class AndroidLLDBDriver extends LLDBDriver {
     }
 
     @Override
-    public @NotNull LLBreakpoint addBreakpoint(String path, int line, @Nullable String condition) throws ExecutionException {
+    public @NotNull LLBreakpoint addBreakpoint(String path, int line, @Nullable String condition) throws ExecutionException, DebuggerCommandException {
         LOG.info("addBreakpoint,path="  + path);
         LOG.info("addBreakpoint,line="  + line);
         LOG.info("addBreakpoint,condition="  + condition);
@@ -198,13 +198,13 @@ public class AndroidLLDBDriver extends LLDBDriver {
         if(!StringUtil.isEmpty(source)){
             if (SystemInfo.isWindows) {
                 LOG.info("Set settings set target.source-map: " + "\\proc\\self\\cwd," + source);
-                executeConsoleCommand("settings set target.source-map " + "\\proc\\self\\cwd " + source.replace("/", "\\"));
+                executeInterpreterCommand("settings set target.source-map " + "\\proc\\self\\cwd " + source.replace("/", "\\"));
             } else {
                 String usrHome = System.getProperty("user.home");
                 LOG.info("Set settings set target.source-map: " + usrHome + "," + source);
-                executeConsoleCommand("settings set target.source-map " + usrHome + " " + source);
+                executeInterpreterCommand("settings set target.source-map " + usrHome + " " + source);
             }
-            executeConsoleCommand("settings append target.source-map " + "\"\"" + " " + source);
+            executeInterpreterCommand("settings append target.source-map " + "\"\"" + " " + source);
         }
     }
 
@@ -219,7 +219,7 @@ public class AndroidLLDBDriver extends LLDBDriver {
 
             String searchPathsStr = StringUtil.join(searchPaths, " ");
             LOG.info("Set target.exec-search-paths: " + searchPathsStr);
-            executeConsoleCommand("settings set target.exec-search-paths " + searchPathsStr);
+            executeInterpreterCommand("settings set target.exec-search-paths " + searchPathsStr);
         }
 
         //executeConsoleCommand("log enable -f G:/lldb.txt lldb all");
@@ -228,7 +228,7 @@ public class AndroidLLDBDriver extends LLDBDriver {
     private void commonLoad() throws ExecutionException {
         LOG.info("Loading driver");
         LOG.debug("Load startup scripts");
-        executeConsoleCommand("settings set target.process.thread.step-out-avoid-nodebug false");
+        executeInterpreterCommand("settings set target.process.thread.step-out-avoid-nodebug false");
         loadStartupScripts();
         loadJObjectPrettyPrinterScripts();
         LOG.debug("run console commands from environment");
@@ -264,16 +264,16 @@ public class AndroidLLDBDriver extends LLDBDriver {
     private void loadStartupScripts() throws ExecutionException {
         for(String script : mStartUpScripts){
             LOG.info("Loading startup script: " + script);
-            executeConsoleCommand("command source \"" + script + "\"");
+            executeInterpreterCommand("command source \"" + script + "\"");
         }
     }
 
     private void loadJObjectPrettyPrinterScripts() throws ExecutionException {
         File scriptPath = new File(mParameters.getDebugExePath() + "/shared/jobject_printers", "jstring_reader.py");
         LOG.info("Loading startup script: " + scriptPath);
-        executeConsoleCommand("command script import \"" + scriptPath + "\"");
+        executeInterpreterCommand("command script import \"" + scriptPath + "\"");
         int level = mParameters.getApiLevel();
-        executeConsoleCommand(String.format("script jstring_reader.register(%d, %s)", level, mIsAndroidArt ? "False" : "True"));
+        executeInterpreterCommand(String.format("script jstring_reader.register(%d, %s)", level, mIsAndroidArt ? "False" : "True"));
     }
 
     private void runStartupCommands() throws ExecutionException {
@@ -289,7 +289,7 @@ public class AndroidLLDBDriver extends LLDBDriver {
             cmd = cmd.trim();
             if(!cmd.isEmpty()){
                 LOG.info(String.format("%s command: \"%s\"", name, cmd));
-                executeConsoleCommand(cmd);
+                executeInterpreterCommand(cmd);
             }
         }
     }

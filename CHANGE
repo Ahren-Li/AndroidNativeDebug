@@ -1,0 +1,16 @@
+Do support CLion 2021.2 - 2021.2.X
+----
+Do support CLion 2021.1 - 2021.1.X
+----
+Do support CLion 2020.1 - 2020.1.3, Normal debugging function.
+----
+support 2019.3 - 2019.3.2
+----
+Fix Android P can't get source file problem
+----
+Fix Android O can't get process list problem
+----
+Modify error message.
+----
+First release.
+----

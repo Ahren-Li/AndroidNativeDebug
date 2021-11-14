@@ -15,6 +15,9 @@
 
 package org.ahren.android.run.configuration.gdb;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
+import com.jetbrains.cidr.ArchitectureType;
+import com.jetbrains.cidr.execution.TrivialRunParameters;
 import org.ahren.android.debug.AndroidDebugParameters;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -38,7 +41,7 @@ public class AndroidGDBDebugProcess extends CidrDebugProcess {
                            @NotNull XDebugSession session,
                            @NotNull TextConsoleBuilder consoleBuilder) throws ExecutionException {
 
-        super(CidrRemoteGDBDebugProcessKt.createParams(configuration), session, consoleBuilder);
+        super(new TrivialRunParameters(configuration, new GeneralCommandLine(), ArchitectureType.MIPS), session, consoleBuilder);
         mParameters = parameters;
 
     }

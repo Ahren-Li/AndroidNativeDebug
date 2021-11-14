@@ -15,7 +15,9 @@
 
 package org.ahren.android.run.configuration.lldb;
 
-import com.intellij.openapi.application.PathManager;
+import com.intellij.execution.configurations.GeneralCommandLine;
+import com.jetbrains.cidr.ArchitectureType;
+import com.jetbrains.cidr.execution.TrivialRunParameters;
 import org.ahren.android.adb.devices.AdbDeviceProxy;
 import org.ahren.android.debug.AndroidDebugParameters;
 import com.google.common.collect.Sets;
@@ -34,16 +36,11 @@ import com.jetbrains.cidr.execution.debugger.CidrDebugProcess;
 import com.jetbrains.cidr.execution.debugger.backend.*;
 import com.jetbrains.cidr.execution.debugger.breakpoints.CidrSymbolicBreakpointType;
 import com.jetbrains.cidr.execution.debugger.breakpoints.CidrSymbolicBreakpointType.Properties;
-import com.jetbrains.cidr.execution.debugger.remote.CidrRemoteGDBDebugProcessKt;
 import org.ahren.android.run.configuration.SessionStarter;
-import org.ahren.android.utils.AndroidBundle;
 import org.ahren.android.utils.Log;
 import org.ahren.android.utils.ProgressReporter;
-import kotlin.jvm.internal.Intrinsics;
-import org.ahren.android.utils.ShellScript;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.*;
 
 
@@ -76,7 +73,7 @@ public class AndroidLLDBDebugProcess extends CidrDebugProcess {
                                    @NotNull TextConsoleBuilder consoleBuilder,
                                    @NotNull ProgressReporter progressReporter) throws ExecutionException {
 
-        super(CidrRemoteGDBDebugProcessKt.createParams(configuration), session, consoleBuilder);
+        super(new TrivialRunParameters(configuration, new GeneralCommandLine(), ArchitectureType.MIPS), session, consoleBuilder);
         mParameters = parameters;
         mAdbProxy = new AdbDeviceProxy(parameters.getSerialNum());
         mProject= session.getProject();

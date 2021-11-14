@@ -25,7 +25,6 @@ import com.intellij.openapi.ui.ComponentWithBrowseButton;
 import com.intellij.openapi.ui.TextComponentAccessor;
 import com.intellij.ui.components.JBTextField;
 import com.jetbrains.cidr.cpp.CPPBundle;
-import com.jetbrains.cidr.cpp.execution.remote.CLionRemoteRunConfigurationEditor;
 import com.jetbrains.cidr.cpp.execution.remote.CLionRemoteRunConfigurationKt;
 import com.jetbrains.cidr.cpp.toolchains.CPPDebugger;
 import com.jetbrains.cidr.cpp.toolchains.CPPToolchains;
@@ -33,11 +32,12 @@ import com.jetbrains.cidr.ui.*;
 import kotlin.comparisons.ComparisonsKt;
 import kotlin.jvm.internal.Intrinsics;
 import org.ahren.android.ui.DefaultDebuggerComboItem;
+import org.ahren.android.ui.MyDebuggersRenderer;
+import org.ahren.android.utils.AndroidBundle;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -110,13 +110,14 @@ public class GDBEditor extends SettingsEditor<GDBRunConfiguration> {
             return o instanceof File || o instanceof String;
         });
 
-        String builder = "Custom " + CPPBundle.message("gdb") + " executable";
+        String builder = "Custom " + AndroidBundle.message("android.gdb") + " executable";
         mCustomExecutableComboItem = new CustomEditableComboItem(builder);
         mDebuggersModel = new SortedCollectionComboBoxModel<>(new GdbComparator<>());
 
         mDebuggersCombo.setModel(mDebuggersModel);
         resetDebuggersModel(null);
 
+        /*
         try {
             Class MyDebuggersRenderer = Class.forName("com.jetbrains.cidr.cpp.execution.remote.MyDebuggersRenderer");
             Field o = MyDebuggersRenderer.getDeclaredField("INSTANCE");
@@ -128,7 +129,9 @@ public class GDBEditor extends SettingsEditor<GDBRunConfiguration> {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+
+        mDebuggersCombo.setRenderer(new MyDebuggersRenderer(true));
 
         mDebuggersCombo.setPrototypeDisplayValue(DefaultDebuggerComboItem.AHREN);
         mDebuggersCombo.addActionListener(e ->
@@ -136,7 +139,7 @@ public class GDBEditor extends SettingsEditor<GDBRunConfiguration> {
         );
 
         mCWBrowseButton = new ComponentWithBrowseButton<>(mDebuggersCombo, null);
-        String title = CPPBundle.message("cpp.toolchains.title.select", CPPBundle.message("gdb") + " executable");
+        String title = AndroidBundle.message("android.gdb") + " executable";
         FileChooserDescriptor descriptor =  FileChooserDescriptorFactory.createSingleFileOrExecutableAppDescriptor();
         descriptor = descriptor.withFileFilter(virtualFile -> new File(virtualFile.getPath()).canExecute());
         mCWBrowseButton.addBrowseFolderListener(title, null, mProject, descriptor, new ActionAccessor());

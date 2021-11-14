@@ -18,6 +18,7 @@ package org.ahren.android.debug;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RunConfigurationBase;
+import com.intellij.execution.configurations.RunConfigurationOptions;
 import com.intellij.execution.runners.RunConfigurationWithSuppressedDefaultRunAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.SettingsEditor;
@@ -36,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public abstract class BaseRunConfiguration extends RunConfigurationBase
+public abstract class BaseRunConfiguration extends RunConfigurationBase<RunConfigurationOptions>
         implements RunConfigurationWithSuppressedDefaultRunAction, IAndroidRunProfile {
 
     private final static boolean DEBUG = false;

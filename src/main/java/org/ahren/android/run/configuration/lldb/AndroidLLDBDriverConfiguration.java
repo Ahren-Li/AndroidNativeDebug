@@ -15,6 +15,7 @@
 
 package org.ahren.android.run.configuration.lldb;
 
+import com.intellij.util.system.CpuArch;
 import com.jetbrains.cidr.ArchitectureType;
 import com.jetbrains.cidr.execution.debugger.backend.lldb.LLDBDriverConfiguration;
 import org.ahren.android.debug.AndroidDebugParameters;
@@ -218,10 +219,10 @@ public class AndroidLLDBDriverConfiguration extends LLDBDriverConfiguration {
         }
 
         platformString = platformString + "-";
-        if (SystemInfo.is64Bit) {
+        if (CpuArch.CURRENT.width == 64) {
             platformString = platformString + "x86_64";
         } else {
-            if (!SystemInfo.is32Bit) {
+            if (!(CpuArch.CURRENT.width == 32)) {
                 return "UNKNOWN";
             }
 

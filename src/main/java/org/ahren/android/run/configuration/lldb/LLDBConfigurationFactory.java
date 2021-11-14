@@ -22,6 +22,7 @@ import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.openapi.project.Project;
 import org.ahren.android.utils.Configuration;
 import org.jetbrains.annotations.Nls;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public class LLDBConfigurationFactory extends ConfigurationFactory {
@@ -38,7 +39,12 @@ public class LLDBConfigurationFactory extends ConfigurationFactory {
 
     @Nls
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return Configuration.LLDB;
+    }
+
+    @Override
+    public @NotNull @NonNls String getId() {
+        return getName();
     }
 }

@@ -4,14 +4,15 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.32'
 }
 
-group 'org.ahren.android'
-version '1.211.1'
+group plugin_group
+version plugin_version
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: '*.jar')
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
@@ -19,13 +20,52 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2021.1'
+    pluginName.set('AndroidNativeDebug')
+    version.set('CL-2021.2.3')
+    // intellijRepo.set('https://www.jetbrains.com/intellij-repository')
+    downloadSources.set(false)
+    instrumentCode.set(true)
+    plugins.set(['cidr-debugger-plugin', 'cidr-base-plugin', 'clion', 'cidr-clangFormat'])
 }
+
 patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+    sinceBuild.set('212.0')
+    changeNotes.set(provider {getChangeNote(projectDir)})
+}
+
+instrumentCode{
+    compilerVersion.set('212.5457.51')
+}
+
+publishPlugin {
+    channels.set([plugin_channels])
+    token.set(System.getenv("CLION_PUBLISH_TOKEN"))
 }
 test {
     useJUnitPlatform()
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+}
+
+static def getChangeNote(File projectDir){
+    def change = ""
+    def change_file = new File(projectDir, "CHANGE")
+    def input = change_file.newReader()
+    BufferedReader br = new BufferedReader(input)
+    try {
+        while(true) {
+            String line = br.readLine()
+            if (line == null || "----" == line) break
+            change += line + "<br>"
+        }
+    } finally {
+        br.close()
+    }
+    return change
 }

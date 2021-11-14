@@ -40,7 +40,7 @@ public class AdbService implements Disposable {
     private final AtomicReference<File> mAdb = new AtomicReference<>();
 
     public static AdbService getInstance() {
-        return ServiceManager.getService(AdbService.class);
+        return ApplicationManager.getApplication().getService(AdbService.class);
     }
 
     @Override
@@ -136,6 +136,7 @@ public class AdbService implements Disposable {
             mAdb = adb;
         }
 
+        @SuppressWarnings("deprecation")
         public BridgeConnectionResult call() throws Exception {
             AdbService.LOG.info("Initializing adb using: " + mAdb.getAbsolutePath());
             ImmutableMap<String, String> env;
